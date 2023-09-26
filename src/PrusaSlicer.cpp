@@ -757,6 +757,9 @@ bool CLI::setup(int argc, char **argv)
     // The resources are packed to 'resources'
     // Path from Slic3r binary to resources:
     boost::filesystem::path path_resources = boost::filesystem::canonical(path_to_binary).parent_path() / "../resources";
+    char *penv = getenv("PRUSA_RESOURCES");
+    if(penv)
+	path_resources = penv;
 #endif
 
     set_resources_dir(path_resources.string());
