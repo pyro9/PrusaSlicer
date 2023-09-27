@@ -1073,6 +1073,9 @@ void GCodeGenerator::_do_export(Print& print, GCodeOutputStream &file, Thumbnail
     print.throw_if_canceled();
 
     // Write some terse information on the slicing parameters.
+    if(print.default_object_config().elide_start) {
+        file.write_format("; Start elided\n");
+    }
     const PrintObject *first_object         = print.objects().front();
     const double       layer_height         = first_object->config().layer_height.value;
     assert(! print.config().first_layer_height.percent);
@@ -1234,19 +1237,22 @@ void GCodeGenerator::_do_export(Print& print, GCodeOutputStream &file, Thumbnail
     // Set extruder(s) temperature before and after start G-code.
     this->_print_first_layer_extruder_temperatures(file, print, start_gcode, initial_extruder_id, false);
 
-    // adds tag for processor
-    file.write_format(";%s%s\n", GCodeProcessor::reserved_tag(GCodeProcessor::ETags::Role).c_str(), gcode_extrusion_role_to_string(GCodeExtrusionRole::Custom).c_str());
 
-    // Write the custom start G-code
-    file.writeln(start_gcode);
+    if(!print.default_object_config().elide_start) { //SMJ
+        // adds tag for processor
+        file.write_format(";%s%s\n", GCodeProcessor::reserved_tag(GCodeProcessor::ETags::Role).c_str(), gcode_extrusion_role_to_string(GCodeExtrusionRole::Custom).c_str());
 
-    this->_print_first_layer_extruder_temperatures(file, print, start_gcode, initial_extruder_id, true);
-    print.throw_if_canceled();
+        // Write the custom start G-code
+        file.writeln(start_gcode);
 
-    // Set other general things.
-    file.write(this->preamble());
+        this->_print_first_layer_extruder_temperatures(file, print, start_gcode, initial_extruder_id, true);
+        print.throw_if_canceled();
 
-    print.throw_if_canceled();
+        // Set other general things.
+        file.write(this->preamble());
+
+        print.throw_if_canceled();
+    }
 
     // Collect custom seam data from all objects.
     std::function<void(void)> throw_if_canceled_func = [&print]() { print.throw_if_canceled();};
@@ -1255,7 +1261,10 @@ void GCodeGenerator::_do_export(Print& print, GCodeOutputStream &file, Thumbnail
     if (! (has_wipe_tower && print.config().single_extruder_multi_material_priming)) {
         // Set initial extruder only after custom start G-code.
         // Ugly hack: Do not set the initial extruder if the extruder is primed using the MMU priming towers at the edge of the print bed.
-        file.write(this->set_extruder(initial_extruder_id, 0.));
+        if(!print.default_object_config().elide_start)  //SMJ
+            file.write(this->set_extruder(initial_extruder_id, 0.));
+        else
+            this->set_extruder(initial_extruder_id, 0.);
     }
 
     GCode::SmoothPathCache smooth_path_cache_global = smooth_path_interpolate_global(print);
@@ -1388,6 +1397,7 @@ void GCodeGenerator::_do_export(Print& print, GCodeOutputStream &file, Thumbnail
     file.write_format(";%s%s\n", GCodeProcessor::reserved_tag(GCodeProcessor::ETags::Role).c_str(), gcode_extrusion_role_to_string(GCodeExtrusionRole::Custom).c_str());
 
     // Process filament-specific gcode in extruder order.
+    if(!print.default_object_config().elide_end) //SMJ
     {
         DynamicConfig config;
         config.set_key_value("layer_num", new ConfigOptionInt(m_layer_index));
