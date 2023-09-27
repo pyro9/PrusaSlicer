@@ -1472,6 +1472,20 @@ void PrintConfigDef::init_fff_params()
     def->mode = comExpert;
     def->set_default_value(new ConfigOptionBool(0));
 
+    def = this->add("elide_start", coBool);
+    def->label = L("Elide Start");
+    def->tooltip = L("Enable this to skip print setup code to make splicing gcode easier. This may be useful for advanced users doing multi-color prints that violate layer ordering."
+                     "Always check the result for potential collisions. Use at your own risk.");
+    def->mode = comExpert;
+    def->set_default_value(new ConfigOptionBool(0));
+
+    def = this->add("elide_end", coBool);
+    def->label = L("Elide End");
+    def->tooltip = L("Enable this to skip print finalize code to make splicing gcode easier. This may be useful for advanced users doing multi-color prints that violate layer ordering."
+                     "Always check the result for potential collisions. Use at your own risk.");
+    def->mode = comExpert;
+    def->set_default_value(new ConfigOptionBool(0));
+
     def = this->add("gcode_flavor", coEnum);
     def->label = L("G-code flavor");
     def->tooltip = L("Some G/M-code commands, including temperature control and others, are not universal. "
