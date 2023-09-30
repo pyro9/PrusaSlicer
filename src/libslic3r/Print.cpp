@@ -514,7 +514,7 @@ std::string Print::validate(std::vector<std::string>* warnings) const
     if (extruders.empty())
         return _u8L("The supplied settings will cause an empty print.");
 
-    if (m_config.complete_objects) {
+    if (m_config.complete_objects && !m_objects[0]->config().errors_are_warnings) {
         if (!sequential_print_horizontal_clearance_valid(*this, const_cast<Polygons*>(&m_sequential_print_clearance_contours)))
             return _u8L("Some objects are too close; your extruder will collide with them.");
         if (!sequential_print_vertical_clearance_valid(*this))
