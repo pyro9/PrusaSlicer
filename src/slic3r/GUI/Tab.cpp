@@ -1690,10 +1690,14 @@ void TabPrint::build()
         optgroup = page->new_optgroup(L("Output file"));
         optgroup->append_single_option_line("gcode_comments");
         optgroup->append_single_option_line("gcode_label_objects");
-        optgroup->append_single_option_line("errors_are_warnings");
         Option option = optgroup->get_option("output_filename_format");
         option.opt.full_width = true;
         optgroup->append_single_option_line(option);
+
+        optgroup = page->new_optgroup(L("Advanced Output"));
+        optgroup->append_single_option_line("errors_are_warnings");
+        optgroup->append_single_option_line("elide_start");
+        optgroup->append_single_option_line("elide_end");
 
         optgroup = page->new_optgroup(L("Other"));
 
