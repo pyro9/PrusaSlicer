@@ -1282,7 +1282,7 @@ void GCodeGenerator::_do_export(Print& print, GCodeOutputStream &file, Thumbnail
                 m_enable_cooling_markers = false; // we're not filtering these moves through CoolingBuffer
                 m_avoid_crossing_perimeters.use_external_mp_once();
                 file.write(this->retract_and_wipe());
-                file.write(this->travel_to(Point(0, 0), ExtrusionRole::None, "move to origin position for next object"));
+// SMJ                file.write(this->travel_to(Point(0, 0), ExtrusionRole::None, "move to origin position for next object"));
                 m_enable_cooling_markers = true;
                 // Disable motion planner when traveling to first object point.
                 m_avoid_crossing_perimeters.disable_once();
