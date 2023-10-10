@@ -3283,7 +3283,9 @@ void GLCanvas3D::on_key(wxKeyEvent& evt)
                     if (keyCode == WXK_LEFT ||
                         keyCode == WXK_RIGHT ||
                         keyCode == WXK_UP ||
-                        keyCode == WXK_DOWN) {
+                        keyCode == WXK_DOWN ||
+                        keyCode == WXK_HOME ||
+                        keyCode == WXK_END ){
                         if (dynamic_cast<Preview*>(m_canvas->GetParent()) != nullptr)
                             post_event(wxKeyEvent(EVT_GLCANVAS_MOVE_SLIDERS, evt));
                     }
@@ -3296,7 +3298,9 @@ void GLCanvas3D::on_key(wxKeyEvent& evt)
         && keyCode != WXK_LEFT
         && keyCode != WXK_UP
         && keyCode != WXK_RIGHT
-        && keyCode != WXK_DOWN) {
+        && keyCode != WXK_DOWN
+        && keyCode != WXK_HOME
+        && keyCode != WXK_END ) {
         evt.Skip();   // Needed to have EVT_CHAR generated as well
     }
 }
