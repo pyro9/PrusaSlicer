@@ -294,6 +294,7 @@ public:
     void switch_one_layer_mode();
     void discard_all_thicks();
     void move_current_thumb_to_pos(wxPoint pos);
+    void home_end_current_thumb( bool setmax);
     void edit_extruder_sequence();
     void jump_to_value();
     void enable_action_icon(bool enable) { m_enable_action_icon = enable; }
