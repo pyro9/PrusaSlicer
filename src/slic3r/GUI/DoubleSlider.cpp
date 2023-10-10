@@ -1876,6 +1876,8 @@ void Control::OnKeyDown(wxKeyEvent &event)
         else {
             if (key == WXK_LEFT || key == WXK_RIGHT)
                 move_current_thumb(key == WXK_LEFT);
+            else if (key == WXK_HOME || key == WXK_END)
+		home_end_current_thumb( key == WXK_END);
         }
     }
     else {
