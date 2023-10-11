@@ -1842,9 +1842,11 @@ void Control::OnWheel(wxMouseEvent& event)
     move_current_thumb((m_draw_mode == dmSequentialGCodeView) ? event.GetWheelRotation() < 0 : event.GetWheelRotation() > 0);
 }
 
+wxDEFINE_EVENT(EVT_GLCANVAS_MOVE_SLIDERS, wxKeyEvent);
+
 void Control::OnKeyDown(wxKeyEvent &event)
 {
-    const int key = event.GetKeyCode();
+    int key = event.GetKeyCode();
     if (m_draw_mode != dmSequentialGCodeView && key == WXK_NUMPAD_ADD) {
         // OnChar() is called immediately after OnKeyDown(), which can cause call of add_tick() twice.
         // To avoid this case we should suppress second add_tick() call.
@@ -1874,10 +1876,25 @@ void Control::OnKeyDown(wxKeyEvent &event)
             }
         }
         else {
-            if (key == WXK_LEFT || key == WXK_RIGHT)
+            if (key == WXK_RIGHT && m_higher_value == m_max_value) {
+                wxCommandEvent e(wxEVT_SCROLL_CHANGED);
+                e.SetEventObject(this);
+		e.SetInt(1);
+                ProcessWindowEvent(e);
+                key = WXK_HOME;
+            }
+            else if (key == WXK_LEFT && m_higher_value == m_min_value) {
+                wxCommandEvent e(wxEVT_SCROLL_CHANGED);
+                e.SetEventObject(this);
+		e.SetInt(-1);
+                ProcessWindowEvent(e);
+                key = WXK_END;
+            }
+            else if (key == WXK_LEFT || key == WXK_RIGHT)
                 move_current_thumb(key == WXK_LEFT);
-            else if (key == WXK_HOME || key == WXK_END)
+            else if (key == WXK_HOME || key == WXK_END) {
 		home_end_current_thumb( key == WXK_END);
+            }
         }
     }
     else {
