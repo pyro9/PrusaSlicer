@@ -1842,8 +1842,6 @@ void Control::OnWheel(wxMouseEvent& event)
     move_current_thumb((m_draw_mode == dmSequentialGCodeView) ? event.GetWheelRotation() < 0 : event.GetWheelRotation() > 0);
 }
 
-wxDEFINE_EVENT(EVT_GLCANVAS_MOVE_SLIDERS, wxKeyEvent);
-
 void Control::OnKeyDown(wxKeyEvent &event)
 {
     int key = event.GetKeyCode();
