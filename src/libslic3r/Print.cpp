@@ -532,10 +532,21 @@ std::string Print::validate(std::vector<std::string>* warnings) const
         return _u8L("The supplied settings will cause an empty print.");
 
     if (m_config.complete_objects) {
-        if (!sequential_print_horizontal_clearance_valid(*this, const_cast<Polygons*>(&m_sequential_print_clearance_contours)))
-            return _u8L("Some objects are too close; your extruder will collide with them.");
-        if (!sequential_print_vertical_clearance_valid(*this))
-            return _u8L("Some objects are too tall and cannot be printed without extruder collisions.");
+// SMJ
+        if (!sequential_print_horizontal_clearance_valid(*this, const_cast<Polygons*>(&m_sequential_print_clearance_contours))) {
+            if(m_default_object_config.errors_are_warnings) {
+                if(warnings)
+                    warnings->push_back("Some objects are too close; your extruder will collide with them.");
+            } else
+                return _u8L("Some objects are too close; your extruder will collide with them.");
+        }
+        if (!sequential_print_vertical_clearance_valid(*this)) {
+            if(m_default_object_config.errors_are_warnings) {
+                if(warnings)
+                    warnings->push_back("Some objects are too tall and cannot be printed without extruder collisions.");
+            } else
+                return _u8L("Some objects are too tall and cannot be printed without extruder collisions.");
+        }
     }
     else
         const_cast<Polygons*>(&m_sequential_print_clearance_contours)->clear();
