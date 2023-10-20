@@ -928,6 +928,20 @@ void Preview::on_moves_slider_scroll_changed(wxCommandEvent& event)
 {
     m_canvas->update_gcode_sequential_view_current(static_cast<unsigned int>(m_moves_slider->GetLowerValueD() - 1.0), static_cast<unsigned int>(m_moves_slider->GetHigherValueD() - 1.0));
     m_canvas->render();
+    if(event.GetInt()>0) {
+	wxKeyEvent e;
+        e.m_keyCode=WXK_UP;
+        m_layers_slider->OnKeyDown(e);
+        e.m_keyCode=WXK_HOME;
+        m_moves_slider->OnKeyDown(e);
+    }
+    else if(event.GetInt()<0) {
+	wxKeyEvent e;
+        e.m_keyCode=WXK_DOWN;
+        m_layers_slider->OnKeyDown(e);
+        e.m_keyCode=WXK_END;
+        m_moves_slider->OnKeyDown(e);
+    }
 }
 
 } // namespace GUI

@@ -1766,6 +1766,22 @@ void Control::enter_window(wxMouseEvent& event, const bool enter)
     event.Skip();
 }
 
+
+void Control::home_end_current_thumb( bool setmax)
+{
+    if(is_horizontal()) {
+        m_higher_value = setmax ? m_max_value : m_min_value;
+        correct_higher_value();
+
+        Refresh();
+        Update();
+
+        wxCommandEvent e(wxEVT_SCROLL_CHANGED);
+        e.SetEventObject(this);
+        ProcessWindowEvent(e);
+    }
+}
+
 // "condition" have to be true for:
 //    -  value increase (if wxSL_VERTICAL)
 //    -  value decrease (if wxSL_HORIZONTAL) 
@@ -1779,7 +1795,7 @@ void Control::move_current_thumb(const bool condition)
     // accelerators
     int accelerator = 0;
     if (wxGetKeyState(WXK_SHIFT))
-        accelerator += 5;
+        accelerator += 10;
     if (wxGetKeyState(WXK_CONTROL))
         accelerator += 5;
     if (accelerator > 0)
@@ -1828,7 +1844,7 @@ void Control::OnWheel(wxMouseEvent& event)
 
 void Control::OnKeyDown(wxKeyEvent &event)
 {
-    const int key = event.GetKeyCode();
+    int key = event.GetKeyCode();
     if (m_draw_mode != dmSequentialGCodeView && key == WXK_NUMPAD_ADD) {
         // OnChar() is called immediately after OnKeyDown(), which can cause call of add_tick() twice.
         // To avoid this case we should suppress second add_tick() call.
@@ -1847,6 +1863,8 @@ void Control::OnKeyDown(wxKeyEvent &event)
         if (m_is_focused) {
             if (key == WXK_LEFT || key == WXK_RIGHT)
                 move_current_thumb(key == WXK_LEFT);
+            else if (key == WXK_HOME || key == WXK_END)
+		home_end_current_thumb( key == WXK_END);
             else if (key == WXK_UP || key == WXK_DOWN) {
                 if (key == WXK_DOWN)
                     m_selection = ssHigher;
@@ -1856,8 +1874,25 @@ void Control::OnKeyDown(wxKeyEvent &event)
             }
         }
         else {
-            if (key == WXK_LEFT || key == WXK_RIGHT)
+            if (key == WXK_RIGHT && m_higher_value == m_max_value) {
+                wxCommandEvent e(wxEVT_SCROLL_CHANGED);
+                e.SetEventObject(this);
+		e.SetInt(1);
+                ProcessWindowEvent(e);
+                key = WXK_HOME;
+            }
+            else if (key == WXK_LEFT && m_higher_value == m_min_value) {
+                wxCommandEvent e(wxEVT_SCROLL_CHANGED);
+                e.SetEventObject(this);
+		e.SetInt(-1);
+                ProcessWindowEvent(e);
+                key = WXK_END;
+            }
+            else if (key == WXK_LEFT || key == WXK_RIGHT)
                 move_current_thumb(key == WXK_LEFT);
+            else if (key == WXK_HOME || key == WXK_END) {
+		home_end_current_thumb( key == WXK_END);
+            }
         }
     }
     else {
