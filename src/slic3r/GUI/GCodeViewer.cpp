@@ -300,15 +300,27 @@ void GCodeViewer::SequentialRangeCap::reset() {
 
 void GCodeViewer::SequentialView::Marker::init()
 {
-    m_model.init_from(stilized_arrow(16, 2.0f, 4.0f, 1.0f, 8.0f));
-    m_model.set_color({ 1.0f, 1.0f, 1.0f, 0.5f });
+    std::string s = resources_dir();
+    s += "/Nozzle.stl";
+    TriangleMesh t;
+    if(t.ReadSTLFile(s.c_str())) {
+        m_model.init_from(t);
+        m_need_flip = false;
+    } else {
+        m_model.init_from(stilized_arrow(16, 2.0f, 4.0f, 1.0f, 8.0f));
+        m_need_flip = true;
+    }
+    m_model.set_color({ 1.0f, 1.0f, 1.0f, 0.75f });
 }
 
 void GCodeViewer::SequentialView::Marker::set_world_position(const Vec3f& position)
 {    
     m_world_position = position;
-    m_world_transform = (Geometry::translation_transform((position + m_model_z_offset * Vec3f::UnitZ()).cast<double>()) *
-        Geometry::translation_transform(m_model.get_bounding_box().size().z() * Vec3d::UnitZ()) * Geometry::rotation_transform({ M_PI, 0.0, 0.0 })).cast<float>();
+    if(m_need_flip) {
+        m_world_transform = (Geometry::translation_transform((position + m_model_z_offset * Vec3f::UnitZ()).cast<double>()) *
+            Geometry::translation_transform(m_model.get_bounding_box().size().z() * Vec3d::UnitZ()) * Geometry::rotation_transform({ M_PI, 0.0, 0.0 })).cast<float>();
+    } else
+        m_world_transform = (Geometry::translation_transform((position + m_model_z_offset * Vec3f::UnitZ()).cast<double>())).cast<float>();
 }
 
 void GCodeViewer::SequentialView::Marker::render()
