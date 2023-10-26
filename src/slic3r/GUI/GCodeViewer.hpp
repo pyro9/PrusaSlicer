@@ -663,8 +663,10 @@ public:
             // z offset of the print
             float m_z_offset{ 0.0f };
             // z offset of the model
-            float m_model_z_offset{ 0.5f };
+//            float m_model_z_offset{ 0.5f };
+            float m_model_z_offset{ 0.0f };
             bool m_visible{ true };
+            bool m_need_flip{ true };
 
         public:
             void init();
