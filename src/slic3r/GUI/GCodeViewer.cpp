@@ -300,13 +300,26 @@ void GCodeViewer::SequentialRangeCap::reset() {
 
 void GCodeViewer::SequentialView::Marker::init()
 {
-    std::string s = resources_dir();
+    bool loaded=false;
+    std::string s = data_dir();
     s += "/Nozzle.stl";
     TriangleMesh t;
     if(t.ReadSTLFile(s.c_str())) {
         m_model.init_from(t);
         m_need_flip = false;
-    } else {
+        loaded=true;
+    } 
+
+    if(!loaded) {
+        s = resources_dir();
+        s += "/Nozzle.stl";
+        if(t.ReadSTLFile(s.c_str())) {
+            m_model.init_from(t);
+            m_need_flip = false;
+            loaded=true;
+        } 
+    }
+    if(!loaded) {
         m_model.init_from(stilized_arrow(16, 2.0f, 4.0f, 1.0f, 8.0f));
         m_need_flip = true;
     }
