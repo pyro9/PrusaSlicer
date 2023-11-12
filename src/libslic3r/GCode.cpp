@@ -2940,6 +2940,7 @@ std::string GCodeGenerator::change_layer(
         gcode += m_writer.reset_e();
     }
 
+    // SMJ if this crashes the nozzle, don't update if print_z < new position
     Vec3d new_position = this->writer().get_position();
     new_position.z() = print_z;
     this->writer().update_position(new_position);
