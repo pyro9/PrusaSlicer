@@ -2791,11 +2791,13 @@ std::string GCodeGenerator::change_layer(
         ) :
         std::nullopt
     };
-    gcode += (
-        helix_gcode ?
-        *helix_gcode :
-        m_writer.travel_to_z(m_config.z_offset.value + print_z, comment)
-    );
+    if( previous_layer_z < print_z) { // SMJ
+        gcode += (
+            helix_gcode ?
+            *helix_gcode :
+            m_writer.travel_to_z(m_config.z_offset.value + print_z, comment)
+        );
+    }
 
     // forget last wiping path as wiping after raising Z is pointless
     m_wipe.reset_path();
