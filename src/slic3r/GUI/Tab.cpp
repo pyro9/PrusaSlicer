@@ -1745,11 +1745,6 @@ void TabPrint::build()
         optgroup->append_single_option_line("elide_start");
         optgroup->append_single_option_line("elide_end");
 
-        optgroup = page->new_optgroup(L("Advanced Output"));
-        optgroup->append_single_option_line("errors_are_warnings");
-        optgroup->append_single_option_line("elide_start");
-        optgroup->append_single_option_line("elide_end");
-
         optgroup = page->new_optgroup(L("Other"));
 
         create_line_with_widget(optgroup.get(), "gcode_substitutions", "g-code-substitutions_301694", [this](wxWindow* parent) {
