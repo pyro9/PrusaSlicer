@@ -217,6 +217,13 @@ compare_prerelease (char *x, char *y) {
   size_t xlen, ylen, xn, yn, min;
   int xisnum, yisnum, xnum, ynum;
   int res;
+
+  // since prusa will never report a 4axis version available, no need fro numeric comparison
+  if(x && !strncmp(x, "4axis",5))
+    return 1;
+  if(y && !strncmp(y, "4axis",5))
+    return -1;
+
   if (x == NULL && y == NULL) return 0;
   if (y == NULL && x) return -1;
   if (x == NULL && y) return 1;
