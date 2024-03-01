@@ -2565,7 +2565,10 @@ LayerResult GCodeGenerator::process_layer(
         const Vec3d &to{*m_current_layer_first_position};
         layer_change_gcode = this->get_ramping_layer_change_gcode(from, to, *m_layer_change_extruder_id);
     } else {
-        layer_change_gcode = this->writer().get_travel_to_z_gcode(print_z, "simple layer change");
+        if (print_z > previous_layer_z)
+            layer_change_gcode = this->writer().get_travel_to_z_gcode(print_z, "simple layer change");
+        else
+            layer_change_gcode = "";
     }
 
     const auto keep_retraciton{[&](){
@@ -2942,8 +2945,10 @@ std::string GCodeGenerator::change_layer(
 
     // SMJ if this crashes the nozzle, don't update if print_z < new position
     Vec3d new_position = this->writer().get_position();
-    new_position.z() = print_z;
-    this->writer().update_position(new_position);
+    if(new_position.z() < print_z) {
+        new_position.z() = print_z;
+        this->writer().update_position(new_position);
+    }
 
     m_previous_layer_last_position = this->last_position ?
         std::optional{to_3d(this->point_to_gcode(*this->last_position), previous_layer_z)} :
